@@ -2,6 +2,7 @@
 import shutil
 import os
 import whisper
+import uvicorn
 
 # Erstelle eine FastAPI-App
 app = FastAPI()
@@ -34,4 +35,7 @@ async def upload_audio(file: UploadFile = File(...)):
     print(result["text"])
 
     return {"filename": file.filename, "message": result["text"]}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
