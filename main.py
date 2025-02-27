@@ -1,7 +1,7 @@
 ﻿from fastapi import FastAPI, File, UploadFile
 import shutil
 import os
-#import whisper
+import whisper
 
 # Erstelle eine FastAPI-App
 app = FastAPI()
@@ -29,5 +29,9 @@ async def upload_audio(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    return {"filename": file.filename, "message": "Upload erfolgreich"}
+    model = whisper.load_model("turbo")
+    result = model.transcribe(file_path)
+    print(result["text"])
+
+    return {"filename": file.filename, "message": result["text"]}
 
