@@ -9,3 +9,7 @@ tiktoken
 python-multipart
 uvicorn
 openai-whisper
+datasets
+librosa
+transformers
+accelerate
