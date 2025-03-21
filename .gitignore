@@ -1,3 +1,4 @@
 data/models/
 uploaded_audio/
 __pycache__
+.idea/

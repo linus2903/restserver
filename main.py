@@ -1,8 +1,8 @@
 ﻿from fastapi import FastAPI, File, UploadFile
 import shutil
 import os
-import whisper
 import uvicorn
+import bart
 
 # Erstelle eine FastAPI-App
 app = FastAPI()
@@ -15,10 +15,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 async def root():
     return {"message": "Hallo, FastAPI läuft!"}
 
-# Beispiel-Endpunkt: Echo-Route
-@app.get("/echo/{text}")
-async def echo(text: str):
-    return {"echo": text}
+@app.get("/summarize/{text}")
+async def summarize(text: str):
+    return bart.summarize_with_bart(text)
 
 # Beispiel-Endpunkt: POST mit JSON-Daten
 from pydantic import BaseModel
@@ -30,9 +29,9 @@ async def upload_audio(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    model = whisper.load_model("turbo")
-    result = model.transcribe(file_path)
-    print(result["text"])
+    #model = 
+    #result = model.transcribe(file_path)
+    #print(result["text"])
 
     return {"filename": file.filename, "message": result["text"]}
 
