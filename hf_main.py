@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 from datasets import Audio, load_dataset, Dataset
 import librosa
 
@@ -17,12 +17,24 @@ model.to(device)
 
 processor = AutoProcessor.from_pretrained(model_id)
 
-audio_path = "./samples/aufzeichnung.wav"
+audio_path = "./samples/common_voice_de_17299389.mp3"
 dataset = Dataset.from_dict({"audio": [audio_path]})
 
 #dataset = load_dataset("hf-internal-testing/librispeech_asr_dummy", "clean", split="validation")
 dataset = dataset.cast_column("audio", Audio(processor.feature_extractor.sampling_rate))
 sample = dataset[0]["audio"]
+
+pipe = pipeline(
+    "automatic-speech-recognition", 
+    model=model, 
+    tokenizer=processor.tokenizer, 
+    feature_extractor=processor.feature_extractor, 
+    chunk_length_s=30, 
+    batch_size=16, 
+    return_timestamps=True, 
+    torch_dtype=torch_dtype, 
+    device=device,
+    )
 
 inputs = processor(
     sample["array"],
@@ -36,17 +48,9 @@ inputs = processor(
 inputs = inputs.to(device, dtype=torch_dtype)
 
 gen_kwargs = {
-    "max_new_tokens": 448,
-    "num_beams": 1,
-    "condition_on_prev_tokens": False,
-    "compression_ratio_threshold": 1.35,  # zlib compression ratio threshold (in token space)
-    "temperature": (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
-    "logprob_threshold": -1.0,
-    "no_speech_threshold": 0.6,
-    "return_timestamps": True,
+    "max_new_tokens": 128,
 }
 
-pred_ids = model.generate(**inputs, **gen_kwargs)
-pred_text = processor.batch_decode(pred_ids, skip_special_tokens=True, decode_with_timestamps=False)
+result = pipe(sample, **gen_kwargs)
 
-print(pred_text)
+print(result)
