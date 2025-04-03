@@ -8,8 +8,8 @@ tqdm==4.67.1
 tiktoken
 python-multipart
 uvicorn
-openai-whisper
 datasets
 librosa
 transformers
 accelerate
+protobuf
