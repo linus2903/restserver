@@ -2,6 +2,6 @@ data/models/
 uploaded_audio/
 __pycache__
 .idea/
-models/facebookbart-large-cnn
-models/openaiwhisper-large-v3-turbo
+models/facebookbart-large-cnn/
+models/openaiwhisper-large-v3-turbo/
 .venv/
